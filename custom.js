@@ -44,7 +44,6 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     var isRecording = false;
     // NODES
     var $content = $('#content');
-    var $nluTag = $('#nlu_tag');
     var $textNluTag = $("#text_nlu_tag");
     var $ttsGo = $('#tts_go');
     var $ttsText = $('#tts_text');
@@ -125,15 +124,12 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     };
     $("#status-indicator").click(connect);
   
-    $nluTag.val(NLU_TAG || '');
     $textNluTag.val(NLU_TAG || '');
 
     // Disconnect
     $(window).unload(function(){
         Nuance.disconnect();
     });
-
-
 
 
     //
@@ -160,12 +156,12 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
             var options = {
                 userMedia: userMedia
             };
-            if($nluTag.val()) {
+            if(NLU_TAG) {
                 options.nlu = true;
-                options.tag = $nluTag.val();
+                options.tag = NLU_TAG;
             }
             Nuance.startASR(options);
-            $asrLabel.text('STOP RECORDING');
+            $asrLabel.text('STOP');
         }
         isRecording = !isRecording;
     };
@@ -243,4 +239,20 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
 
     $(connect);
 
+
+    function execute() {
+        var code = editor.getValue();
+
+        $.ajax({
+            "url": "http://codepad.org/",
+            "dataType": 'json',
+            "type": 'POST',
+            "data": {
+                "lang": "Python",
+                "code": code,
+                "run": "True",
+                "submit": "Submit",
+            }
+        });
+    }
 })();
