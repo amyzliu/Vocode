@@ -202,7 +202,7 @@
                             if(msg.message == "query_error") {
                                 alert('error');
                             } else {
-                                alert(msg.transcriptions);
+                                alert(msg.transcriptions[0]);
                             }
                         } else if(msg.result_format == "nlu_interpretation_results") {
                             if(msg.nlu_interpretation_results.status === 'success'){
@@ -232,6 +232,7 @@
 
             });
         };
+        $("#status-indicator").click(connect);
       
         $nluTag.val(NLU_TAG || '');
         $textNluTag.val(NLU_TAG || '');
