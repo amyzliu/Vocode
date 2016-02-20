@@ -198,16 +198,24 @@
                     } else if (msg.result_type == "NMDP_TTS_CMD") {
                         dLog(JSON.stringify(msg, null, 2), $ttsDebug);
                     } else if (msg.result_type == "NDSP_ASR_APP_CMD") {
-                        if(msg.nlu_interpretation_results.status === 'success'){
-                            dLog(JSON.stringify(msg, null, 2), $asrDebug);
-                        } else {
-                            dLog(JSON.stringify(msg.nlu_interpretation_results.payload.interpretations, null, 2), $asrDebug);
+                        if(msg.result_format == "rec_text_results") {
+                            if(msg.message == "query_error") {
+                                alert('error');
+                            } else {
+                                alert(msg.transcriptions);
+                            }
+                        } else if(msg.result_format == "nlu_interpretation_results") {
+                            if(msg.nlu_interpretation_results.status === 'success'){
+                                dLog(JSON.stringify(msg, null, 2), $asrDebug);
+                            } else {
+                                dLog(JSON.stringify(msg.nlu_interpretation_results.payload.interpretations, null, 2), $asrDebug);
+                            }
                         }
                     } else if (msg.result_type == "NVC_ASR_CMD") {
-                        if(msg.nlu_interpretation_results.status === 'success'){
-                            dLog(JSON.stringify(msg, null, 2), $asrDebug);
+                        if(msg.message == "query_error") {
+                            alert('error');
                         } else {
-                            dLog(JSON.stringify(msg.nlu_interpretation_results.payload.interpretations, null, 2), $asrDebug);
+                            alert(msg.transcriptions);
                         }
                     } else if (msg.result_type === "NDSP_APP_CMD") {
                         if(msg.nlu_interpretation_results.status === 'success'){
