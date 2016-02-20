@@ -1,7 +1,8 @@
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     lineNumbers: true,
-    mode: "text/x-csrc",
+    mode: "python",
     keyMap: "vim",
     matchBrackets: true,
+    autoCloseBrackets: true,
     showCursorWhenSelecting: true
 });

@@ -1,0 +1,5 @@
+/* Overrides lib/codemirror.css */
+
+.CodeMirror {
+	height: 500px;
+}
