@@ -74,33 +74,38 @@ var editor;
     }
 
     function parseJSONresult(JSONresult) {
-        if (JSONresult.hasOwnProperty("literal")) {
-          // keep this in case we need to do something with literals
-          // insertAtCursor(JSONresult.literal + "\n");
-        }
-        if (JSONresult.hasOwnProperty("action")) {
-          var intent = JSONresult.action.intent.value;
-        }
-        if (JSONresult.hasOwnProperty("concepts")) {
-          var concepts = {};
-          for (var key in JSONresult.concepts) {
-            var value = []
-            for (concept in JSONresult.concepts[key]) {
-              if (JSONresult.concepts[key][concept].hasOwnProperty("value")) {
-                value.push(JSONresult.concepts[key][concept].value)
-              }
-              else {
-                value.push(JSONresult.concepts[key][concept].literal)
-              }
+      var intent
+      var concepts
+      var literal
+
+      if (JSONresult.hasOwnProperty("literal")) {
+        // keep this in case we need to do something with literals
+        // insertAtCursor(JSONresult.literal + "\n");
+        literal = JSONresult.literal
+      }
+      if (JSONresult.hasOwnProperty("action")) {
+        intent = JSONresult.action.intent.value;
+      }
+      if (JSONresult.hasOwnProperty("concepts")) {
+        concepts = {};
+        for (var key in JSONresult.concepts) {
+          var value = []
+          for (concept in JSONresult.concepts[key]) {
+            if (JSONresult.concepts[key][concept].hasOwnProperty("value")) {
+              value.push(JSONresult.concepts[key][concept].value)
             }
-            concepts[key] = value;
+            else {
+              value.push(JSONresult.concepts[key][concept].literal)
+            }
           }
+          concepts[key] = value;
         }
-        handleIntent(intent, concepts);
+      }
+      handleIntent(intent, concepts, literal);
     }
 
     // Perform actions based on intent and concept types
-    function handleIntent(intent, concepts) {
+    function handleIntent(intent, concepts, literal) {
       switch (intent.toUpperCase()) {
         case 'ASSIGN':
           handleAssign(concepts)
@@ -114,6 +119,9 @@ var editor;
         case 'MOVE':
           return alert('Awaiting implementation: MOVE')
           break;
+        case 'WHILE':
+          handleWhile(concepts, literal)
+          break;
         default:
           return alert('No Intent found for: ' + intent)
       }
@@ -125,6 +133,15 @@ var editor;
 
     function handleAssign (concepts) {
       insertAtCursor(concepts.VARIABLE[0] + " = " + concepts.VARIABLE[1] + "\n")
+    }
+
+    function handleWhile (concepts, literal) {
+      if (literal.match(/end *while/)) {
+        CodeMirror.commands.indentLess(editor)
+      } else {
+        insertAtCursor('while ' + concepts.VARIABLE[0] + ":\n")
+        CodeMirror.commands.indentMore(editor)
+      }
     }
 
     function moveCursor (concepts) {
