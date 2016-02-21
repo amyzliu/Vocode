@@ -148,7 +148,7 @@ var editor;
   }
 
   function handlePrint(literal) {
-    insertAtCursor(literal.substring(6) + "\n");
+    insertAtCursor("print " + literal.substring(6) + "\n");
     CodeMirror.commands.indentAuto(editor)
   }
 
