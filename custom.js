@@ -197,6 +197,11 @@ var editor;
           } else if (msg.result_format == "nlu_interpretation_results") {
             if (msg.nlu_interpretation_results.status === 'success') {
               dLog(JSON.stringify(msg, null, 2), $asrDebug);
+
+              var json_response = msg.nlu_interpretation_results.payload.interpretations[0]
+
+              // grab JSON result and generate python code
+              parseJSONresult(json_response);
             } else {
               dLog(JSON.stringify(msg.nlu_interpretation_results.payload.interpretations, null, 2), $asrDebug);
             }
@@ -211,12 +216,6 @@ var editor;
           if (msg.nlu_interpretation_results.status === 'success') {
             var json_response = msg.nlu_interpretation_results.payload.interpretations[0]
             dLog(JSON.stringify(json_response), $nluDebug);
-
-            // If the intent is 'MOVE'
-            if (json_response.hasOwnProperty("action") &&
-              json_response.action.intent.value === 'MOVE') {
-              moveCursor(json_response.concepts)
-            }
 
             // grab JSON result and generate python code
             parseJSONresult(json_response);
