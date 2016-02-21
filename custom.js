@@ -82,17 +82,21 @@ var editor;
             var intent = JSONresult.action.intent.value;
         }
         if (JSONresult.hasOwnProperty("concepts")) {
-            var concepts = {};
-            for (var key in JSONresult.concepts) {
-                var thisConcept = JSONresult.concepts[key][0];
-                if (thisConcept.hasOwnProperty("value") && thisConcept.value.length > 0) {
-                    var value = thisConcept.value;
-                }
-                else {
-                    var value = thisConcept.literal;
-                }
-                concepts[key] = value;
+          var concepts = {};
+          for (var key in JSONresult.concepts) {
+            concepts[key] = {};
+            var thisConcept = JSONresult.concepts[key];
+            for (var index in thisConcept) {
+              var element = thisConcept[index];
+              if (element.hasOwnProperty("value") && element.value.length > 0) {
+                var value = element.value;
+              }
+              else {
+                var value = element.literal;
+              }
+              concepts[key][index] = value;
             }
+          }
         }
         handleIntent(intent, concepts);
     }
@@ -101,7 +105,9 @@ var editor;
     function handleIntent(intent, concepts) {
         insertAtCursor(intent + "\n");
         for (var key in concepts) {
-            insertAtCursor(key + " " + concepts[key] + "\n")
+            for (var index in concepts[key]) {
+                insertAtCursor(key + " " + concepts[key][index] + "\n")
+            }
         }
     }
 
