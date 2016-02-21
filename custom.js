@@ -118,6 +118,9 @@ var editor;
       case 'WHILE':
         handleWhile(concepts, literal)
         break;
+      case 'EXECUTE':
+        execute()
+        break;
       default:
         return alert('No Intent found for: ' + intent)
     }
