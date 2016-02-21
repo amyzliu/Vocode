@@ -282,7 +282,7 @@ var editor;
   function handleIntent(intent, concepts, literal, tokens) {
     switch (intent.toUpperCase()) {
       case 'ASSIGN':
-        handleAssign(concepts);
+        handleAssign(concepts, tokens);
         break;
       case 'ASSIGN_B':
         handleAssignB(concepts, literal, tokens);
@@ -329,9 +329,9 @@ var editor;
     // }
   }
 
-  function handleAssign (concepts) {
+  function handleAssign (concepts, tokens) {
     addSymbol(concepts.VARIABLE[0]);
-    str = getSymbol(concepts.VARIABLE[1]);
+    str = getSymbol(tokens[2][1]);
     insertAtCursor(concepts.VARIABLE[0] + " = " + str, function () {
       CodeMirror.commands.newlineAndIndent(editor)
     })
