@@ -20,7 +20,8 @@ var editor;
   editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     lineNumbers: true,
     mode: "python",
-    keyMap: "vim",
+    tabSize: 2,
+    indentWithTabs: true,
     matchBrackets: true,
     autoCloseBrackets: true,
     showCursorWhenSelecting: true
