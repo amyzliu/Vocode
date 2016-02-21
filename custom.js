@@ -321,7 +321,7 @@ var editor;
         execute()
         break;
       default:
-        return alert('No Intent found for: ' + intent)
+        return console.log('No Intent found for: ' + intent)
     }
     // insertAtCursor(intent + "\n");
     // for (var key in concepts) {
@@ -485,13 +485,16 @@ var editor;
     funs.push(concepts.VARIABLE[0])
     params = concepts.PARAMETERS[0].split(" and ")
     params.map(addSymbol)
-    insertAtCursor('def ' + concepts.VARIABLE[0] + "("  + params.join(", ") + "):");
-    CodeMirror.commands.newlineAndIndent(editor)  
+    insertAtCursor('def ' + concepts.VARIABLE[0] + "("  + params.join(", ") + "):", function() {
+      CodeMirror.commands.newlineAndIndent(editor)  
+    });
+   
   }
 
   function handleCallFunction(concepts, literal, tokens) {
-    insertAtCursor(concepts.VARIABLE[0] + "(" + concepts.PARAMETERS[0].split(" and ").map(getSymbol).join(", ") + ")");
-    CodeMirror.commands.newlineAndIndent(editor)
+    insertAtCursor(concepts.VARIABLE[0] + "(" + concepts.PARAMETERS[0].split(" and ").map(getSymbol).join(", ") + ")", function () {
+      CodeMirror.commands.newlineAndIndent(editor);
+    });
   }
 
   //
@@ -522,9 +525,9 @@ var editor;
         } else if (msg.result_type == "NDSP_ASR_APP_CMD") {
           if (msg.result_format == "rec_text_results") {
             if (msg.message == "query_error") {
-              alert('error');
+              console.log('error');
             } else {
-              alert(msg.transcriptions[0]);
+              console.log(msg.transcriptions[0]);
             }
           } else if (msg.result_format == "nlu_interpretation_results") {
             if (msg.nlu_interpretation_results.status === 'success') {
@@ -540,9 +543,9 @@ var editor;
           }
         } else if (msg.result_type == "NVC_ASR_CMD") {
           if (msg.message == "query_error") {
-            alert('error');
+            console.log('error');
           } else {
-            alert(msg.transcriptions);
+            console.log(msg.transcriptions);
           }
         } else if (msg.result_type === "NDSP_APP_CMD") {
           if (msg.nlu_interpretation_results.status === 'success') {
