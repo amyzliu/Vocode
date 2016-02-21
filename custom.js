@@ -127,6 +127,9 @@ var editor;
       case 'FUNCTION':
         return alert('Awaiting implementation: FUNCTION')
         break;
+      case 'REMOVE_LINE':
+        handleRemoveLine(concepts)
+        break;
       case 'EXECUTE':
         execute()
         break;
@@ -139,12 +142,14 @@ var editor;
     // }
   }
 
-  function handleAssign(concepts) {
+  function handleAssign (concepts) {
     insertAtCursor(concepts.VARIABLE[0] + " = " + concepts.VARIABLE[1] + "\n")
+    CodeMirror.commands.indentAuto(editor)
   }
 
   function handlePrint(literal) {
     insertAtCursor(literal.substring(6) + "\n");
+    CodeMirror.commands.indentAuto(editor)
   }
 
   function handleWhile(concepts, literal) {
@@ -152,8 +157,14 @@ var editor;
       CodeMirror.commands.indentLess(editor)
     } else {
       insertAtCursor('while ' + concepts.VARIABLE[0] + ":\n")
-      CodeMirror.commands.indentMore(editor)
+      CodeMirror.commands.indentAuto(editor)
     }
+  }
+
+  function handleRemoveLine (concepts) {
+    editor.setCursor(concepts.CARDINAL_NUMBER[0]-1)
+    CodeMirror.commands.deleteLine(editor)
+    CodeMirror.commands.indentAuto(editor)
   }
 
   function handleIf(concepts, literal) {
@@ -161,7 +172,7 @@ var editor;
       CodeMirror.commands.indentLess(editor)
     } else {
       insertAtCursor('if ' + concepts.VARIABLE[0] + ":\n")
-      CodeMirror.commands.indentMore(editor)
+      CodeMirror.commands.indentAuto(editor)
     }
   }
 
