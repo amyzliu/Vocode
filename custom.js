@@ -1,3 +1,5 @@
+var editor;
+
 (function(){
 
 
@@ -15,7 +17,7 @@
     var USER_ID = "liuzamy@gmail.com";
     var NLU_TAG = "TEST1" ;
 
-    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+    editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         lineNumbers: true,
         mode: "python",
         keyMap: "vim",
@@ -35,7 +37,7 @@
     if(!navigator.getUserMedia){
         console.log("No getUserMedia Support in this Browser");
     }
-    
+
     navigator.getUserMedia({
         audio:true
     }, function(stream){
@@ -101,6 +103,24 @@
         }
     }
 
+    function moveCursor (concepts) {
+      var CARDINAL_NUMBER = concepts.CARDINAL_NUMBER
+      var QUANTIFIER = concepts.QUANTIFIER || 'line'
+      var DIRECTION = concepts.DIRECTION
+      var OBJECT = concepts.OBJECT
+      var LOCATION_VAR = concepts.LOCATION_VAR
+
+      if (LOCATION_VAR) {
+        switch (LOCATION_VAR.toLowerCase()) {
+          case 'line':
+            CodeMirror.jumpToLine(editor, CARDINAL_NUMBER)
+            break;
+          default:
+            return;
+        }
+      }
+    }
+
 
     //
     // Connect
@@ -149,7 +169,16 @@
                     }
                 } else if (msg.result_type === "NDSP_APP_CMD") {
                     if(msg.nlu_interpretation_results.status === 'success'){
-                        dLog(JSON.stringify(msg.nlu_interpretation_results.payload.interpretations, null, 2), $nluDebug);
+                        var json_response = msg.nlu_interpretation_results.payload.interpretations[0]
+                        dLog(JSON.stringify(json_response), $nluDebug);
+
+                        // If the intent is 'MOVE'
+                        if (json_response.hasOwnProperty("action") &&
+                            json_response.action.intent.value === 'MOVE') {
+                              moveCursor(json_response.concepts)
+                        }
+
+                        generateCode(json_response);
 
                         // grab JSON result and generate python code
                         generateCode(msg.nlu_interpretation_results.payload.interpretations[0]);
@@ -167,7 +196,7 @@
         });
     };
     $("#status-indicator").click(connect);
-  
+
     $textNluTag.val(NLU_TAG || '');
 
     // Disconnect
@@ -211,7 +240,7 @@
     };
     $asrRecord.on('click', asr);
 
-    // 
+    //
     // NLU / Text
     function textNlu(evt){
         var options = {
@@ -288,7 +317,7 @@
         var code = editor.getValue();
 
         $.post(
-            "https://zihao.me/api/codepad", 
+            "https://zihao.me/api/codepad",
             {
                 lang: "Python",
                 code: code,
