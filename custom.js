@@ -132,7 +132,7 @@ var editor;
           n = n + g * x
           g = 0;
         }
-        else { 
+        else {
           e = 1;
         }
       }
@@ -178,7 +178,7 @@ var editor;
       mult: '*',
       div: '/',
       less: '<',
-      great: '>', 
+      great: '>',
       equal: '==',
     }
     for (var key in opTable) {
@@ -280,7 +280,7 @@ var editor;
         handleAssignU(concepts, literal, tokens);
         break;
       case 'MOVE':
-        return alert('Awaiting implementation: MOVE');
+        handleMove(concepts, literal);
         break;
       case 'WHILE':
         handleWhile(concepts, literal);
@@ -297,6 +297,9 @@ var editor;
       case 'REMOVE_LINE':
         handleRemoveLine(concepts)
         break;
+      case 'OPEN_LINE':
+        handleOpenLine(concepts, literal)
+        break;
       case 'EXECUTE':
         execute()
         break;
@@ -312,8 +315,8 @@ var editor;
   function handleAssign (concepts) {
     addSymbol(concepts.VARIABLE[0]);
     str = getSymbol(concepts.VARIABLE[1]);
-    insertAtCursor(concepts.VARIABLE[0] + " = " + str + "\n")
-    CodeMirror.commands.indentAuto(editor)
+    insertAtCursor(concepts.VARIABLE[0] + " = " + str)
+    CodeMirror.commands.newlineAndIndent(editor)
   }
 
   function handleAssignU (concepts, literal, tokens) {
@@ -368,31 +371,63 @@ var editor;
 
   function handlePrint(literal) {
     str = getSymbol(literal.substring(6));
-    insertAtCursor("print " + str + "\n");
-    CodeMirror.commands.indentAuto(editor)
+    insertAtCursor("print " + str);
+    CodeMirror.commands.newlineAndIndent(editor)
   }
 
   function handleWhile(concepts, literal) {
     if (literal.match(/end *while/i)) {
       CodeMirror.commands.indentLess(editor)
     } else {
-      insertAtCursor('while ' + concepts.VARIABLE[0] + ":\n")
-      CodeMirror.commands.indentAuto(editor)
+      insertAtCursor('while ' + concepts.VARIABLE[0] + ":")
+      CodeMirror.commands.newlineAndIndent(editor)
     }
   }
 
   function handleRemoveLine (concepts) {
-    editor.setCursor(concepts.CARDINAL_NUMBER[0]-1)
+    if (concepts && typeof concepts.CARDINAL_NUMBER[0] !== 'undefined') {
+      editor.setCursor(concepts.CARDINAL_NUMBER[0]-1)
+    }
     CodeMirror.commands.deleteLine(editor)
     CodeMirror.commands.indentAuto(editor)
   }
 
-  function handleIf(concepts, literal) {
+  function handleOpenLine (concepts, literal) {
+    console.log(concepts);
+    var DIRECTION
+    var LINE_NUM
+    if (concepts && concepts.CARDINAL_NUMBER && typeof concepts.CARDINAL_NUMBER[0] !== 'undefined') {
+      LINE_NUM = Number(concepts.CARDINAL_NUMBER[0])
+    } else {
+      LINE_NUM = editor.getCursor()["line"]
+    }
+    if (concepts && typeof concepts.DIRECTION[0] !== 'undefined') {
+      DIRECTION = concepts.DIRECTION[0]
+    } else {
+      DIRECTION = 'BELOW'
+    }
+
+    if(DIRECTION === 'BELOW') {
+      editor.setCursor(LINE_NUM)
+      CodeMirror.commands.newlineAndIndent(editor)
+    } else {
+      editor.setCursor(LINE_NUM - 1)
+      CodeMirror.commands.newlineAndIndent(editor)
+    }
+  }
+
+  function handleIf (concepts, literal) {
     if (literal.match(/end *if/i)) {
       CodeMirror.commands.indentLess(editor)
     } else {
-      insertAtCursor('if ' + concepts.VARIABLE[0] + ":\n")
-      CodeMirror.commands.indentAuto(editor)
+      insertAtCursor('if ' + concepts.VARIABLE[0] + ":")
+      CodeMirror.commands.newlineAndIndent(editor)
+    }
+  }
+
+  function handleMove (concepts, literal) {
+    if (concepts && typeof concepts.CARDINAL_NUMBER[0] !== 'undefined') {
+      editor.setCursor(concepts.CARDINAL_NUMBER[0]-1)
     }
   }
 
