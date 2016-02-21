@@ -49,7 +49,6 @@
     var isRecording = false;
     // NODES
     var $content = $('#content');
-    var $nluTag = $('#nlu_tag');
     var $textNluTag = $("#text_nlu_tag");
     var $ttsGo = $('#tts_go');
     var $ttsText = $('#tts_text');
@@ -158,15 +157,12 @@
     };
     $("#status-indicator").click(connect);
   
-    $nluTag.val(NLU_TAG || '');
     $textNluTag.val(NLU_TAG || '');
 
     // Disconnect
     $(window).unload(function(){
         Nuance.disconnect();
     });
-
-
 
 
     //
@@ -193,12 +189,12 @@
             var options = {
                 userMedia: userMedia
             };
-            if($nluTag.val()) {
+            if(NLU_TAG) {
                 options.nlu = true;
-                options.tag = $nluTag.val();
+                options.tag = NLU_TAG;
             }
             Nuance.startASR(options);
-            $asrLabel.text('STOP RECORDING');
+            $asrLabel.text('STOP');
         }
         isRecording = !isRecording;
     };
@@ -276,4 +272,24 @@
 
     $(connect);
 
+
+    function execute() {
+        var code = editor.getValue();
+
+        $.post(
+            "https://zihao.me/api/codepad", 
+            {
+                lang: "Python",
+                code: code,
+                run: "True",
+                submit: "Submit",
+            }
+        ).done(function(data) {
+            var pres = $($(data).find("a[name=output]").next()).find("pre")
+            pres = pres.slice(pres.length/2);
+            $("#output").text(pres.text());
+        });
+    }
+
+    $("#run_code").click(execute);
 })();

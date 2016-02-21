@@ -37,11 +37,41 @@
         </div>
     </h1>
 
-    <form>
-        <textarea id="code" name="code"></textarea>
-    </form>
+    <div class="row">
+        <div class="col-xs-8">
+            <form>
+                <textarea id="code" name="code"></textarea>
+            </form>
+        </div>
+        <div class="col-xs-4">
+            <div class='panel panel-default side-panel'>
+                <div class='panel-heading'>
+                    <strong>Speech Recognition</strong>
+                </div>
+                <div class='panel-body'>
+                    <canvas id="asr_viz" height="220" ></canvas>
+                    <br/>
+                    <button class='btn btn-primary btn-block' id='asr_go' type='button' class='btn btn-primary btn-block'><i class='fa fa-microphone'></i> <span id='asr_label'>RECORD</span></button>
 
-    
+                    <button class='btn btn-primary btn-block' id='run_code' type='button' class='btn btn-primary btn-block'><span>EXECUTE</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class='panel panel-default'>
+        <div class='panel-heading'>
+            <strong>Output</strong>
+        </div>
+        <div class='panel-body'>
+            <pre id="output">1 2 3</pre>
+        </div>
+    </div>
+
+    <div class='panel-body max-600' id='asr_debug_output'>
+
+    </div>
+
     <hr/>
 
     <div id="nlu" class="col-md-12">
@@ -62,25 +92,6 @@
                 </form>
             </div>
             <div class="panel-body max-600" id="nlu_debug_output">
-
-            </div>
-        </div>
-    </div>
-
-    <div id="asr" class='col-md-12'>
-        <div class='panel panel-default'>
-            <div class='panel-heading'>
-                <strong>Speech Recognition</strong>
-            </div>
-            <div class='panel-body'>
-                <div class='form-group'>
-                    <input id="nlu_tag" type="text" class="form-control" placeholder="Version Tag (Only required if performing NLU)"/>
-                </div>
-                <canvas id="asr_viz" height="220" ></canvas>
-                <br/>
-                <button class='btn btn-primary btn-block' id='asr_go' type='button' class='btn btn-primary btn-block'><i class='fa fa-microphone'></i> <span id='asr_label'>RECORD</span></button>
-            </div>
-            <div class='panel-body max-600' id='asr_debug_output'>
 
             </div>
         </div>
@@ -112,6 +123,10 @@
     <footer class='col-md-12 right-aligned'>
         &copy; Baby Unicorn 2016
     </footer>
+
+    <script>
+
+    </script>
 
 </div>
 
