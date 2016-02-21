@@ -73,12 +73,13 @@
 
     function generateCode(JSONresult) {
         if (JSONresult.hasOwnProperty("literal")) {
-            insertAtCursor(JSONresult.literal + "\n");
+            // insertAtCursor(JSONresult.literal + "\n");
         }
         if (JSONresult.hasOwnProperty("action")) {
-            insertAtCursor(JSONresult.action.intent.value + "\n");
+            var intent = JSONresult.action.intent.value;
         }
         if (JSONresult.hasOwnProperty("concepts")) {
+            var concepts = {};
             for (var key in JSONresult.concepts) {
                 if (JSONresult.concepts[key][0].hasOwnProperty("value")) {
                     var value = JSONresult.concepts[key][0].value;
@@ -86,8 +87,17 @@
                 else {
                     var value = JSONresult.concepts[key][0].literal;
                 }
-                insertAtCursor(key + " " + value + "\n");
+                concepts[key] = value;
             }
+        }
+        handleIntent(intent, concepts);
+    }
+
+    // Perform actions based on intent and concept types
+    function handleIntent(intent, concepts) {
+        insertAtCursor(intent + "\n");
+        for (var key in concepts) {
+            insertAtCursor(key + " " + concepts[key] + "\n")
         }
     }
 
@@ -141,6 +151,7 @@
                     if(msg.nlu_interpretation_results.status === 'success'){
                         dLog(JSON.stringify(msg.nlu_interpretation_results.payload.interpretations, null, 2), $nluDebug);
 
+                        // grab JSON result and generate python code
                         generateCode(msg.nlu_interpretation_results.payload.interpretations[0]);
                         
                     } else {
