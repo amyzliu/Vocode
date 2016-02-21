@@ -75,33 +75,56 @@ var editor;
 
     function parseJSONresult(JSONresult) {
         if (JSONresult.hasOwnProperty("literal")) {
-            // keep this in case we need to do something with literals
-            // insertAtCursor(JSONresult.literal + "\n");
+          // keep this in case we need to do something with literals
+          // insertAtCursor(JSONresult.literal + "\n");
         }
         if (JSONresult.hasOwnProperty("action")) {
-            var intent = JSONresult.action.intent.value;
+          var intent = JSONresult.action.intent.value;
         }
         if (JSONresult.hasOwnProperty("concepts")) {
-            var concepts = {};
-            for (var key in JSONresult.concepts) {
-                if (JSONresult.concepts[key][0].hasOwnProperty("value")) {
-                    var value = JSONresult.concepts[key][0].value;
-                }
-                else {
-                    var value = JSONresult.concepts[key][0].literal;
-                }
-                concepts[key] = value;
+          var concepts = {};
+          for (var key in JSONresult.concepts) {
+            var value = []
+            for (concept in JSONresult.concepts[key]) {
+              if (JSONresult.concepts[key][concept].hasOwnProperty("value")) {
+                value.push(JSONresult.concepts[key][concept].value)
+              }
+              else {
+                value.push(JSONresult.concepts[key][concept].literal)
+              }
             }
+            concepts[key] = value;
+          }
         }
         handleIntent(intent, concepts);
     }
 
     // Perform actions based on intent and concept types
     function handleIntent(intent, concepts) {
-        insertAtCursor(intent + "\n");
-        for (var key in concepts) {
-            insertAtCursor(key + " " + concepts[key] + "\n")
-        }
+      switch (intent.toUpperCase()) {
+        case 'ASSIGN':
+          handleAssign(concepts)
+          break;
+        case 'ASSIGN_B':
+          return alert('Awaiting implementation: ASSIGN_B')
+          break;
+        case 'ASSIGN_U':
+          return alert('Awaiting implementation: ASSIGN_U')
+          break;
+        case 'MOVE':
+          return alert('Awaiting implementation: MOVE')
+          break;
+        default:
+          return alert('No Intent found for: ' + intent)
+      }
+      // insertAtCursor(intent + "\n");
+      // for (var key in concepts) {
+      //     insertAtCursor(key + " " + concepts[key] + "\n")
+      // }
+    }
+
+    function handleAssign (concepts) {
+      insertAtCursor(concepts.VARIABLE[0] + " = " + concepts.VARIABLE[1] + "\n")
     }
 
     function moveCursor (concepts) {
