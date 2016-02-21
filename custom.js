@@ -104,19 +104,22 @@ var editor;
   function handleIntent(intent, concepts, literal) {
     switch (intent.toUpperCase()) {
       case 'ASSIGN':
-        handleAssign(concepts)
+        handleAssign(concepts);
         break;
       case 'ASSIGN_B':
-        return alert('Awaiting implementation: ASSIGN_B')
+        return alert('Awaiting implementation: ASSIGN_B');
         break;
       case 'ASSIGN_U':
-        return alert('Awaiting implementation: ASSIGN_U')
+        return alert('Awaiting implementation: ASSIGN_U');
         break;
       case 'MOVE':
-        return alert('Awaiting implementation: MOVE')
+        return alert('Awaiting implementation: MOVE');
         break;
       case 'WHILE':
-        handleWhile(concepts, literal)
+        handleWhile(concepts, literal);
+        break;
+      case 'PRINT':
+        handlePrint(literal);
         break;
       case 'IF':
         handleIf(concepts, literal)
@@ -144,7 +147,12 @@ var editor;
     CodeMirror.commands.indentAuto(editor)
   }
 
-  function handleWhile (concepts, literal) {
+  function handlePrint(literal) {
+    insertAtCursor(literal.substring(6) + "\n");
+    CodeMirror.commands.indentAuto(editor)
+  }
+
+  function handleWhile(concepts, literal) {
     if (literal.match(/end *while/i)) {
       CodeMirror.commands.indentLess(editor)
     } else {
