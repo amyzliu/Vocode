@@ -243,16 +243,20 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     function execute() {
         var code = editor.getValue();
 
-        $.ajax({
-            "url": "http://codepad.org/",
-            "dataType": 'json',
-            "type": 'POST',
-            "data": {
-                "lang": "Python",
-                "code": code,
-                "run": "True",
-                "submit": "Submit",
+        $.post(
+            "https://zihao.me/api/codepad", 
+            {
+                lang: "Python",
+                code: code,
+                run: "True",
+                submit: "Submit",
             }
+        ).done(function(data) {
+            var pres = $($(data).find("a[name=output]").next()).find("pre")
+            pres = pres.slice(pres.length/2);
+            $("#output").text(pres.text());
         });
     }
+
+    $("#run_code").click(execute);
 })();
