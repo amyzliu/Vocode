@@ -334,9 +334,9 @@ var editor;
     fn = getFn(fn, literal);
 
     if(fn == literal) {
-      for (var i in funs) {
-        if(literal.indexOf(i) >= 0) {
-          fn = i
+      for (var i = 0; i < funs.length; i++) {
+        if(literal.indexOf(funs[i]) >= 0) {
+          fn = funs[i];
           break;
         }
       }
