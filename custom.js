@@ -170,6 +170,63 @@ var editor;
     symbols[line].push(symbol);
   }
 
+  function getOp(op, literal) {
+    opTable = {
+      plus: '+',
+      minus: '-',
+      mult: '*',
+      div: '/',
+      less: '<',
+      great: '>', 
+      equal: '==',
+    }
+    for (var key in opTable) {
+      if (opTable.hasOwnProperty(key)) {
+        if(op.indexOf(key) > -1) {
+          return opTable[key];
+        }
+      }
+    }
+    for (var key in opTable) {
+      if (opTable.hasOwnProperty(key)) {
+        if(literal.indexOf(key) > -1) {
+          return opTable[key];
+        }
+      }
+    }
+    return "error"
+  }
+
+  function getFn(fn, literal) {
+    fnTable = {
+      abs: 'abs',
+      neg: 'neg',
+      sort: 'sort',
+      list: 'list',
+      len: 'len',
+    }
+    for (var key in fnTable) {
+      if (fnTable.hasOwnProperty(key)) {
+        if(fn.indexOf(key) > -1) {
+          return fnTable[key];
+        }
+      }
+    }
+    for (var key in fnTable) {
+      if (fnTable.hasOwnProperty(key)) {
+        if(literal.indexOf(key) > -1) {
+          return fnTable[key];
+        }
+      }
+    }
+    return fn
+  }
+
+  function lastWord(str) {
+      var n = str.split(" ");
+      return n[n.length - 1];
+  }
+
   function insertAtCursor(content) {
     var cursor = editor.doc.getCursor();
     editor.doc.replaceRange(content, cursor);
@@ -188,34 +245,38 @@ var editor;
     if (JSONresult.hasOwnProperty("action")) {
       intent = JSONresult.action.intent.value;
     }
+    tokens = []
     if (JSONresult.hasOwnProperty("concepts")) {
       concepts = {};
       for (var key in JSONresult.concepts) {
         var value = []
         for (concept in JSONresult.concepts[key]) {
           if (JSONresult.concepts[key][concept].hasOwnProperty("value")) {
+            tokens.push([JSONresult.concepts[key][concept].ranges[0][0], JSONresult.concepts[key][concept].value]);
             value.push(JSONresult.concepts[key][concept].value)
           } else {
+            tokens.push([JSONresult.concepts[key][concept].ranges[0][0], JSONresult.concepts[key][concept].literal]  );
             value.push(JSONresult.concepts[key][concept].literal)
           }
         }
         concepts[key] = value;
       }
     }
-    handleIntent(intent, concepts, literal);
+    tokens.sort(function (a,b) { return a[0] > b[0] });
+    handleIntent(intent, concepts, literal, tokens);
   }
 
   // Perform actions based on intent and concept types
-  function handleIntent(intent, concepts, literal) {
+  function handleIntent(intent, concepts, literal, tokens) {
     switch (intent.toUpperCase()) {
       case 'ASSIGN':
         handleAssign(concepts);
         break;
       case 'ASSIGN_B':
-        return alert('Awaiting implementation: ASSIGN_B');
+        handleAssignB(concepts, literal, tokens);
         break;
       case 'ASSIGN_U':
-        return alert('Awaiting implementation: ASSIGN_U');
+        handleAssignU(concepts, literal, tokens);
         break;
       case 'MOVE':
         return alert('Awaiting implementation: MOVE');
@@ -251,6 +312,56 @@ var editor;
     addSymbol(concepts.VARIABLE[0]);
     str = getSymbol(concepts.VARIABLE[1]);
     insertAtCursor(concepts.VARIABLE[0] + " = " + str + "\n")
+    CodeMirror.commands.indentAuto(editor)
+  }
+
+  function handleAssignU (concepts, literal, tokens) {
+    console.log(tokens)
+    debugger;
+
+    fn = literal
+    if(tokens[2])
+      fn = tokens[2][1]
+    fn = getFn(fn, literal);
+
+    addSymbol(tokens[0][1]);
+
+    if(tokens[3])
+      str = getSymbol(tokens[3][1]);
+    else
+      str = getSymbol(lastWord(literal))
+
+    if(fn == 'neg')
+      str = '-' + str
+    else if(fn == 'sort')
+      str = 'sorted(' + str + ')'
+    else
+      str = fn + '(' + str + ')'
+
+    insertAtCursor(tokens[0][1] + " = " + str + "\n")
+    CodeMirror.commands.indentAuto(editor)
+  }
+
+
+  function handleAssignB (concepts, literal, tokens) {
+    console.log(tokens)
+    op = literal
+    if(tokens[3])
+      op = tokens[3][1]
+    op = getOp(tokens[3][1], literal);
+    if(op == "error") {
+      console.log(literal, tokens[3]);
+      return;
+    }
+    addSymbol(tokens[0][1]);
+    str1 = getSymbol(tokens[2][1]);
+
+    if(tokens[4])
+      str2 = getSymbol(tokens[4][1]);
+    else
+      str2 = getSymbol(lastWord(literal))
+
+    insertAtCursor(tokens[0][1] + " = " + str1 + " " + op + " " + str2 + "\n")
     CodeMirror.commands.indentAuto(editor)
   }
 
