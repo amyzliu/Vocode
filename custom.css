@@ -9,3 +9,9 @@
   min-height: 450px;
   max-height: 450px;
 }
+
+.cm-tab {
+	display: inline-block;
+	color: rgba(101, 123, 131, 0.2);
+  box-shadow: inset 1px 0;
+}
