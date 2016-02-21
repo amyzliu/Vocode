@@ -120,6 +120,13 @@ var editor;
         break;
       case 'PRINT':
         handlePrint(literal);
+        break;
+      case 'IF':
+        handleIf(concepts, literal)
+        break;
+      case 'FUNCTION':
+        return alert('Awaiting implementation: FUNCTION')
+        break;
       case 'EXECUTE':
         execute()
         break;
@@ -141,10 +148,19 @@ var editor;
   }
 
   function handleWhile(concepts, literal) {
-    if (literal.match(/end *while/)) {
+    if (literal.match(/end *while/i)) {
       CodeMirror.commands.indentLess(editor)
     } else {
       insertAtCursor('while ' + concepts.VARIABLE[0] + ":\n")
+      CodeMirror.commands.indentMore(editor)
+    }
+  }
+
+  function handleIf(concepts, literal) {
+    if (literal.match(/end *if/i)) {
+      CodeMirror.commands.indentLess(editor)
+    } else {
+      insertAtCursor('if ' + concepts.VARIABLE[0] + ":\n")
       CodeMirror.commands.indentMore(editor)
     }
   }
