@@ -1,23 +1,28 @@
-var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
-    lineNumbers: true,
-    mode: "python",
-    keyMap: "vim",
-    matchBrackets: true,
-    autoCloseBrackets: true,
-    showCursorWhenSelecting: true
-});
-
-
 (function(){
 
 
-    //Set these to avoid having to enter them everytime
+    // var URL = 'wss://httpapi.labs.nuance.com/v1?';
+
+    // var APP_ID = "NMDPTRIAL_zzh8829_gmail_com20160220124508";
+    // var APP_KEY = "ff6c5d416e4bf48d85795fdc0a686bc70579fe811fa54e4c16871d439866f497d251d8409dccce22452dfe4f9569169be2141c02ba6a4ed0f16b1389d10720a3";
+    // var USER_ID = "zzh8829@gmail.com";
+    // var NLU_TAG = "hello";
+
     var URL = 'wss://httpapi.labs.nuance.com/v1?';
 
-    var APP_ID = "NMDPTRIAL_zzh8829_gmail_com20160220124508";//<YOUR APP ID (NMAID)>
-    var APP_KEY = "ff6c5d416e4bf48d85795fdc0a686bc70579fe811fa54e4c16871d439866f497d251d8409dccce22452dfe4f9569169be2141c02ba6a4ed0f16b1389d10720a3";//<YOUR APP IDs APP KEY>
-    var USER_ID = "zzh8829@gmail.com";//<SOME ID FOR YOUR USER>
-    var NLU_TAG = "hello" ;//<YOUR BOLT PROJECTs VERSION TAG>
+    var APP_ID = "NMDPTRIAL_liuzamy_gmail_com20160220121529";
+    var APP_KEY = "63fbe89ff3ab6b83df60558af08793595ee3678811535b6b59f67dfbea18804e1369ed06145889f3b8de7ea9651102c3f4694b05bda670169ced12860592d418";
+    var USER_ID = "liuzamy@gmail.com";
+    var NLU_TAG = "TEST1" ;
+
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        mode: "python",
+        keyMap: "vim",
+        matchBrackets: true,
+        autoCloseBrackets: true,
+        showCursorWhenSelecting: true
+    });
 
 
     var userMedia = undefined;
@@ -61,6 +66,31 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         var d = new Date();
         logger.prepend('<div><em>'+d.toISOString()+'</em> &nbsp; <pre>'+msg+'</pre></div>');
     };
+
+    function insertAtCursor(content) {
+        var cursor = editor.doc.getCursor();
+        editor.doc.replaceRange(content, cursor);
+    }
+
+    function generateCode(JSONresult) {
+        if (JSONresult.hasOwnProperty("literal")) {
+            insertAtCursor(JSONresult.literal + "\n");
+        }
+        if (JSONresult.hasOwnProperty("action")) {
+            insertAtCursor(JSONresult.action.intent.value + "\n");
+        }
+        if (JSONresult.hasOwnProperty("concepts")) {
+            for (var key in JSONresult.concepts) {
+                if (JSONresult.concepts[key][0].hasOwnProperty("value")) {
+                    var value = JSONresult.concepts[key][0].value;
+                }
+                else {
+                    var value = JSONresult.concepts[key][0].literal;
+                }
+                insertAtCursor(key + " " + value + "\n");
+            }
+        }
+    }
 
 
     //
@@ -111,6 +141,9 @@ var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
                 } else if (msg.result_type === "NDSP_APP_CMD") {
                     if(msg.nlu_interpretation_results.status === 'success'){
                         dLog(JSON.stringify(msg.nlu_interpretation_results.payload.interpretations, null, 2), $nluDebug);
+
+                        generateCode(msg.nlu_interpretation_results.payload.interpretations[0]);
+                        
                     } else {
                         dLog(JSON.stringify(msg, null, 2), $nluDebug);
                     }
