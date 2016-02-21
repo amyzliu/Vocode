@@ -228,9 +228,18 @@ var editor;
       return n[n.length - 1];
   }
 
-  function insertAtCursor(content) {
-    var cursor = editor.doc.getCursor();
-    editor.doc.replaceRange(content, cursor);
+  function insertAtCursor(content, callback) {
+    insertAnimated(content, 0, 100, callback)
+  }
+
+  function insertAnimated (str, i, timeout, callback) {
+    if (i >= str.length) return callback()
+    var cursor = editor.getCursor()
+
+    setTimeout(function() {
+      editor.replaceRange(str[i], cursor)
+      insertAnimated(str, i + 1, timeout, callback)
+    }, timeout)
   }
 
   function parseJSONresult(JSONresult) {
@@ -315,8 +324,9 @@ var editor;
   function handleAssign (concepts) {
     addSymbol(concepts.VARIABLE[0]);
     str = getSymbol(concepts.VARIABLE[1]);
-    insertAtCursor(concepts.VARIABLE[0] + " = " + str)
-    CodeMirror.commands.newlineAndIndent(editor)
+    insertAtCursor(concepts.VARIABLE[0] + " = " + str, function () {
+      CodeMirror.commands.newlineAndIndent(editor)
+    })
   }
 
   function handleAssignU (concepts, literal, tokens) {
@@ -342,8 +352,9 @@ var editor;
     else
       str = fn + '(' + str + ')'
 
-    insertAtCursor(tokens[0][1] + " = " + str + "\n")
-    CodeMirror.commands.indentAuto(editor)
+    insertAtCursor(tokens[0][1] + " = " + str, function () {
+      CodeMirror.commands.newlineAndIndent(editor)
+    })
   }
 
 
@@ -365,22 +376,25 @@ var editor;
     else
       str2 = getSymbol(lastWord(literal))
 
-    insertAtCursor(tokens[0][1] + " = " + str1 + " " + op + " " + str2 + "\n")
-    CodeMirror.commands.indentAuto(editor)
+    insertAtCursor(tokens[0][1] + " = " + str1 + " " + op + " " + str2, function () {
+      CodeMirror.commands.newlineAndIndent(editor)
+    })
   }
 
   function handlePrint(literal) {
     str = getSymbol(literal.substring(6));
-    insertAtCursor("print " + str);
-    CodeMirror.commands.newlineAndIndent(editor)
+    insertAtCursor("print " + str, function () {
+      CodeMirror.commands.newlineAndIndent(editor)
+    });
   }
 
   function handleWhile(concepts, literal) {
     if (literal.match(/end *while/i)) {
       CodeMirror.commands.indentLess(editor)
     } else {
-      insertAtCursor('while ' + concepts.VARIABLE[0] + ":")
-      CodeMirror.commands.newlineAndIndent(editor)
+      insertAtCursor('while ' + concepts.VARIABLE[0] + ":", function () {
+        CodeMirror.commands.newlineAndIndent(editor)
+      })
     }
   }
 
@@ -420,8 +434,9 @@ var editor;
     if (literal.match(/end *if/i)) {
       CodeMirror.commands.indentLess(editor)
     } else {
-      insertAtCursor('if ' + concepts.VARIABLE[0] + ":")
-      CodeMirror.commands.newlineAndIndent(editor)
+      insertAtCursor('if ' + concepts.VARIABLE[0] + ":", function () {
+        CodeMirror.commands.newlineAndIndent(editor)
+      })
     }
   }
 
