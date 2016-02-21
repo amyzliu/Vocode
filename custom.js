@@ -73,8 +73,9 @@ var editor;
         editor.doc.replaceRange(content, cursor);
     }
 
-    function generateCode(JSONresult) {
+    function parseJSONresult(JSONresult) {
         if (JSONresult.hasOwnProperty("literal")) {
+            // keep this in case we need to do something with literals
             // insertAtCursor(JSONresult.literal + "\n");
         }
         if (JSONresult.hasOwnProperty("action")) {
@@ -178,11 +179,8 @@ var editor;
                               moveCursor(json_response.concepts)
                         }
 
-                        generateCode(json_response);
-
                         // grab JSON result and generate python code
-                        generateCode(msg.nlu_interpretation_results.payload.interpretations[0]);
-                        
+                        parseJSONresult(json_response);
                     } else {
                         dLog(JSON.stringify(msg, null, 2), $nluDebug);
                     }
