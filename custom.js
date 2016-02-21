@@ -84,11 +84,12 @@ var editor;
         if (JSONresult.hasOwnProperty("concepts")) {
             var concepts = {};
             for (var key in JSONresult.concepts) {
-                if (JSONresult.concepts[key][0].hasOwnProperty("value")) {
-                    var value = JSONresult.concepts[key][0].value;
+                var thisConcept = JSONresult.concepts[key][0];
+                if (thisConcept.hasOwnProperty("value") && thisConcept.value.length > 0) {
+                    var value = thisConcept.value;
                 }
                 else {
-                    var value = JSONresult.concepts[key][0].literal;
+                    var value = thisConcept.literal;
                 }
                 concepts[key] = value;
             }
