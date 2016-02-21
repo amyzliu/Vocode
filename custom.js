@@ -86,7 +86,8 @@ var editor;
           for (var key in JSONresult.concepts) {
             var value = []
             for (concept in JSONresult.concepts[key]) {
-              if (JSONresult.concepts[key][concept].hasOwnProperty("value")) {
+              if (JSONresult.concepts[key][concept].hasOwnProperty("value") &&
+                JSONresult.concepts[key][concept].value.length > 0) {
                 value.push(JSONresult.concepts[key][concept].value)
               }
               else {
