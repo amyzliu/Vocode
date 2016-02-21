@@ -264,11 +264,11 @@ var editor;
         var value = []
         for (concept in JSONresult.concepts[key]) {
           if (JSONresult.concepts[key][concept].hasOwnProperty("value") &&  JSONresult.concepts[key][concept].value.indexOf("*") == -1) {
-            tokens.push([JSONresult.concepts[key][concept].ranges[0][0], JSONresult.concepts[key][concept].value]);
-            value.push(JSONresult.concepts[key][concept].value)
+            tokens.push([JSONresult.concepts[key][concept].ranges[0][0], JSONresult.concepts[key][concept].value.toLowerCase()]);
+            value.push(JSONresult.concepts[key][concept].value.toLowerCase())
           } else {
-            tokens.push([JSONresult.concepts[key][concept].ranges[0][0], JSONresult.concepts[key][concept].literal]  );
-            value.push(JSONresult.concepts[key][concept].literal)
+            tokens.push([JSONresult.concepts[key][concept].ranges[0][0], JSONresult.concepts[key][concept].literal.toLowerCase()]  );
+            value.push(JSONresult.concepts[key][concept].literal.toLowerCase())
           }
         }
         concepts[key] = value;
@@ -330,6 +330,7 @@ var editor;
   }
 
   function handleAssign (concepts, tokens) {
+    concepts.VARIABLE[0] = concepts.VARIABLE[0].toLowerCase()
     addSymbol(concepts.VARIABLE[0]);
     str = getSymbol(tokens[2][1]);
     insertAtCursor(concepts.VARIABLE[0] + " = " + str, function () {
@@ -339,7 +340,6 @@ var editor;
 
   function handleAssignU (concepts, literal, tokens) {
     console.log(tokens)
-    debugger;
 
     fn = literal
     if(tokens[2])

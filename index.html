@@ -40,7 +40,7 @@
 
     <div class="row">
         <div class="col-xs-8">
-            <form>
+            <form style="font-size: 1.2em;">
                 <textarea id="code" name="code"></textarea>
             </form>
         </div>
@@ -50,7 +50,7 @@
                     <strong>Speech Recognition</strong>
                 </div>
                 <div class='panel-body'>
-                    <canvas id="asr_viz" height="220" ></canvas>
+                    <canvas id="asr_viz" height="250" ></canvas>
                     <br/>
                     <button class='btn btn-primary btn-block' id='asr_go' type='button' class='btn btn-primary btn-block'><i class='fa fa-microphone'></i> <span id='asr_label'>RECORD</span></button>
                     <br>
@@ -78,12 +78,12 @@
     <div id="nlu" class="col-md-12">
         <div class='panel panel-default'>
             <div class="panel-heading">
-                <strong>Natural Language (Text)</strong>
+                <strong>Natural Language</strong>
             </div>
             <div class="panel-body">
                 <form class='form' role='form' onsubmit="return false;">
                     <div class='form-group'>
-                        <input id="text_nlu_tag" type="text" class="form-control" placeholder="Version Tag"/>
+                        <input id="text_nlu_tag" type="hidden" class="form-control" placeholder="Version Tag"/>
                     </div>
                     <div class="form-group">
                         <input id="nlu_text" type="text" class="form-control" placeholder="Text to process"/>
@@ -93,27 +93,6 @@
                 </form>
             </div>
             <div class="panel-body max-600" id="nlu_debug_output">
-
-            </div>
-        </div>
-    </div>
-
-    <div id="tts" class='col-md-12'>
-        <div class='panel panel-default'>
-            <div class='panel-heading'>
-                <strong>Text to Speech</strong>
-            </div>
-            <div class='panel-body'>
-                <form class='form' role='form' onsubmit="return false;">
-                    <div class='form-group'>
-                        <textarea id="tts_text" type='text' class='form-control textarea' placeholder='What text would you like to have synthesized?' rows='12'></textarea>
-                    </div>
-                    <div class='form-group'>
-                        <button id='tts_go' type='button' class='btn btn-primary btn-block'><i class='fa fa-comment'></i> SPEAK</button>
-                    </div>
-                </form>
-            </div>
-            <div class='panel-body max-600' id='tts_debug_output'>
 
             </div>
         </div>
