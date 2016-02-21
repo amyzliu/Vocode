@@ -198,6 +198,8 @@ var editor;
     return "error"
   }
 
+  funs = []
+
   function getFn(fn, literal) {
     fnTable = {
       abs: 'abs',
@@ -261,7 +263,7 @@ var editor;
       for (var key in JSONresult.concepts) {
         var value = []
         for (concept in JSONresult.concepts[key]) {
-          if (JSONresult.concepts[key][concept].hasOwnProperty("value")) {
+          if (JSONresult.concepts[key][concept].hasOwnProperty("value") &&  JSONresult.concepts[key][concept].value.indexOf("*") == -1) {
             tokens.push([JSONresult.concepts[key][concept].ranges[0][0], JSONresult.concepts[key][concept].value]);
             value.push(JSONresult.concepts[key][concept].value)
           } else {
@@ -300,8 +302,11 @@ var editor;
       case 'IF':
         handleIf(concepts, literal)
         break;
-      case 'FUNCTION':
-        return alert('Awaiting implementation: FUNCTION')
+      case 'CREATE_FUNCTION':
+        handleCreateFunction(concepts, literal);
+        break;
+      case 'CALL_FUNCTION':
+        handleCallFunction(concepts, literal);
         break;
       case 'REMOVE_LINE':
         handleRemoveLine(concepts)
@@ -340,6 +345,18 @@ var editor;
     if(tokens[2])
       fn = tokens[2][1]
     fn = getFn(fn, literal);
+
+    if(fn == literal) {
+      for (var i = 0; i < funs.length; i++) {
+        if(literal.indexOf(funs[i]) >= 0) {
+          fn = funs[i];
+          break;
+        }
+      }
+      if(fn == literal) {
+        return;
+      }
+    }
 
     addSymbol(tokens[0][1]);
 
@@ -463,6 +480,19 @@ var editor;
     }
   }
 
+  function handleCreateFunction(concepts, literal, tokens) {
+    addSymbol(concepts.VARIABLE[0])
+    funs.push(concepts.VARIABLE[0])
+    params = concepts.PARAMETERS[0].split(" and ")
+    params.map(addSymbol)
+    insertAtCursor('def ' + concepts.VARIABLE[0] + "("  + params.join(", ") + "):");
+    CodeMirror.commands.newlineAndIndent(editor)  
+  }
+
+  function handleCallFunction(concepts, literal, tokens) {
+    insertAtCursor(concepts.VARIABLE[0] + "(" + concepts.PARAMETERS[0].split(" and ").map(getSymbol).join(", ") + ")");
+    CodeMirror.commands.newlineAndIndent(editor)
+  }
 
   //
   // Connect
