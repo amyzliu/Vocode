@@ -73,14 +73,16 @@ var editor;
         editor.doc.replaceRange(content, cursor);
     }
 
-    function generateCode(JSONresult) {
+    function parseJSONresult(JSONresult) {
         if (JSONresult.hasOwnProperty("literal")) {
-            insertAtCursor(JSONresult.literal + "\n");
+            // keep this in case we need to do something with literals
+            // insertAtCursor(JSONresult.literal + "\n");
         }
         if (JSONresult.hasOwnProperty("action")) {
-            insertAtCursor(JSONresult.action.intent.value + "\n");
+            var intent = JSONresult.action.intent.value;
         }
         if (JSONresult.hasOwnProperty("concepts")) {
+            var concepts = {};
             for (var key in JSONresult.concepts) {
                 if (JSONresult.concepts[key][0].hasOwnProperty("value")) {
                     var value = JSONresult.concepts[key][0].value;
@@ -88,8 +90,17 @@ var editor;
                 else {
                     var value = JSONresult.concepts[key][0].literal;
                 }
-                insertAtCursor(key + " " + value + "\n");
+                concepts[key] = value;
             }
+        }
+        handleIntent(intent, concepts);
+    }
+
+    // Perform actions based on intent and concept types
+    function handleIntent(intent, concepts) {
+        insertAtCursor(intent + "\n");
+        for (var key in concepts) {
+            insertAtCursor(key + " " + concepts[key] + "\n")
         }
     }
 
@@ -168,8 +179,8 @@ var editor;
                               moveCursor(json_response.concepts)
                         }
 
-                        generateCode(json_response);
-
+                        // grab JSON result and generate python code
+                        parseJSONresult(json_response);
                     } else {
                         dLog(JSON.stringify(msg, null, 2), $nluDebug);
                     }
