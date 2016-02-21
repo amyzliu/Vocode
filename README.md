@@ -1,6 +1,6 @@
 #Vocode
 
-vocode.tech
+https://vocode.tech
 
 Countless avid programmers around the world suffer with Repetitive Strain Injury (RSI) due to hours upon hours of continuous coding. Even more people live with accessibility issues, hindering them from performing motor actions like typing, writing and overall utility of the computer. Vocode can change the status quo.
 
